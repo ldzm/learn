@@ -5,27 +5,27 @@ import com.github.ldzm.commom.Partition;
 public class MedianNum {
 	
 	/**
-     * @param nums an integer array
+     * @param numbs an integer array
      * @return void
      */
-	public int median(int[] nums) {
+	public int median(int[] numbs) {
 
 		int start = 0;
-		int end = nums.length - 1;
+		int end = numbs.length - 1;
 		
-		int index = Partition.partion(nums, 0, end);
+		int index = Partition.partition(numbs, 0, end);
 
-		while (index != (nums.length - 1) / 2) {
-			if (index > (nums.length - 1) / 2) {
+		while (index != (numbs.length - 1) / 2) {
+			if (index > (numbs.length - 1) / 2) {
 				end = index - 1;
-				index = Partition.partion(nums, start, end);
+				index = Partition.partition(numbs, start, end);
 			} else {
 				start = index + 1;
-				index = Partition.partion(nums, start, end);
+				index = Partition.partition(numbs, start, end);
 			}
 		}
 		
-		return nums[index];
+		return numbs[index];
     }
 
 }
