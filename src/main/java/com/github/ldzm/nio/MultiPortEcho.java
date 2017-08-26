@@ -26,29 +26,34 @@ public class MultiPortEcho {
         Selector selector = Selector.open();
 
         // 为每个端口打开一个监听, 并把这些监听注册到selector中
-        for (int i = 0; i < ports.length; ++i) {
+        for (int port : ports) {
             //2. 打开一个ServerSocketChannel
             //其实我们没监听一个端口就需要一个channel
             ServerSocketChannel ssc = ServerSocketChannel.open();
             ssc.configureBlocking(false);//设置为非阻塞
+
             ServerSocket ss = ssc.socket();
-            InetSocketAddress address = new InetSocketAddress(ports[i]);
+            InetSocketAddress address = new InetSocketAddress(port);
             ss.bind(address);//监听一个端口
+
             //3. 注册到selector
             //register的第一个参数永远都是selector
             //第二个参数是我们要监听的事件
             //OP_ACCEPT是新建立连接的事件
             //也是适用于ServerSocketChannel的唯一事件类型
             SelectionKey key = ssc.register(selector, SelectionKey.OP_ACCEPT);
-            System.out.println("Going to listen on " + ports[i]);
+            System.out.println("Going to listen on " + port);
         }
+
         //4. 开始循环，我们已经注册了一些IO兴趣事件
         while (true) {
             //这个方法会阻塞，直到至少有一个已注册的事件发生。当一个或者更多的事件发生时
             // select() 方法将返回所发生的事件的数量。
             int num = selector.select();
-            //返回发生了事件的 SelectionKey 对象的一个 集合
+
+            //返回发生了事件的 SelectionKey 对象的一个集合
             Set selectedKeys = selector.selectedKeys();
+
             //我们通过迭代 SelectionKeys 并依次处理每个 SelectionKey 来处理事件
             //对于每一个 SelectionKey，您必须确定发生的是什么 I/O 事件，以及这个事件影响哪些 I/O 对象。
             Iterator it = selectedKeys.iterator();
@@ -63,7 +68,7 @@ public class MultiPortEcho {
                     ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
                     SocketChannel sc = ssc.accept();
                     sc.configureBlocking(false);
-                    // 7. 讲新连接注册到selector。将新连接的 SocketChannel 配置为非阻塞的
+                    // 7. 将新连接注册到selector。将新连接的 SocketChannel 配置为非阻塞的
                     //而且由于接受这个连接的目的是为了读取来自套接字的数据，所以我们还必须将 SocketChannel 注册到 Selector上
                     SelectionKey newKey = sc.register(selector,SelectionKey.OP_READ);
                     it.remove();
