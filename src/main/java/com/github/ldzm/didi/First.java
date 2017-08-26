@@ -6,12 +6,12 @@ import java.util.Scanner;
 
 public class First {
 
-    private static int maxSubArray(List<Integer> nums) {
+    private static int maxSubArray(List<Integer> numbs) {
 
         int maxSum = Integer.MIN_VALUE;
         int sum = 0;
 
-        for (Integer num : nums) {
+        for (Integer num : numbs) {
             sum += num;
             if (maxSum < sum) {
                 maxSum = sum;
