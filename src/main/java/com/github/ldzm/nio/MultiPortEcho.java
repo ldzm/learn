@@ -81,7 +81,7 @@ public class MultiPortEcho {
             System.out.println("Got connection from " + sc);
 
             //将key对应Channel设置为准备接受其他请求
-            key.interestOps(SelectionKey.OP_ACCEPT);
+            //key.interestOps(SelectionKey.OP_ACCEPT);
 
         } else if ((key.readyOps() & SelectionKey.OP_READ) == SelectionKey.OP_READ) {
             // Read the data
@@ -91,7 +91,7 @@ public class MultiPortEcho {
             while (true) {
                 echoBuffer.clear();
                 int r = sc.read(echoBuffer);
-                System.out.println(r);
+                //System.out.println(r);
                 if (r <= 0) {
                     break;
                 }
@@ -105,7 +105,7 @@ public class MultiPortEcho {
             System.out.println("Echoed " + bytesEchoed + " from " + sc);
 
             // 写完就把状态关注去掉，否则会一直触发写事件(改变自身关注事件)
-            key.interestOps(SelectionKey.OP_READ);
+            //key.interestOps(SelectionKey.OP_READ);
         }
     }
 

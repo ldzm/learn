@@ -18,12 +18,12 @@ public class EchoClient {
         Scanner in = new Scanner(System.in);
         int port = in.nextInt();
 
-        SocketChannel channel = SocketChannel.open();
-        channel.configureBlocking(false);
-        channel.connect(new InetSocketAddress("localhost", port));
+        SocketChannel sc = SocketChannel.open();
+        sc.configureBlocking(false);
+        sc.connect(new InetSocketAddress("localhost", port));
 
         Selector selector = Selector.open();
-        channel.register(selector, SelectionKey.OP_CONNECT);
+        sc.register(selector, SelectionKey.OP_CONNECT);
 
         while(true){
             selector.select();
@@ -33,11 +33,11 @@ public class EchoClient {
                 ite.remove();
 
                 if(key.isConnectable()){
-                    if(channel.isConnectionPending()){
-                        if(channel.finishConnect()){
+                    if(sc.isConnectionPending()){
+                        if(sc.finishConnect()){
                             key.interestOps(SelectionKey.OP_READ);
 
-                            channel.write(CharsetHelper.encode(CharBuffer.wrap("Hello")));
+                            sc.write(CharsetHelper.encode(CharBuffer.wrap("Hello")));
                             System.out.println("连接成功！");
                         }
                         else{
@@ -49,14 +49,14 @@ public class EchoClient {
 
                     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
 
-                    channel.read(byteBuffer);
+                    sc.read(byteBuffer);
                     byteBuffer.flip();
                     CharBuffer charBuffer = CharsetHelper.decode(byteBuffer);
                     System.out.println(charBuffer.toString());
 
                     Scanner in2 = new Scanner(System.in);
                     String input = in2.nextLine();
-                    channel.write(CharsetHelper.encode(CharBuffer.wrap(input)));
+                    sc.write(CharsetHelper.encode(CharBuffer.wrap(input)));
                 }
             }
         }
