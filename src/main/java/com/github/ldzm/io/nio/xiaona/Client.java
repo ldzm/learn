@@ -1,4 +1,4 @@
-package com.github.ldzm.nio.xiaona;
+package com.github.ldzm.io.nio.xiaona;
 
 import com.github.ldzm.commom.CharsetHelper;
 

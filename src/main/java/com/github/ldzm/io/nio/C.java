@@ -1,4 +1,4 @@
-package com.github.ldzm.nio;
+package com.github.ldzm.io.nio;
 
 import java.util.ArrayList;
 import java.util.List;

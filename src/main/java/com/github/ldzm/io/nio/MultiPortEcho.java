@@ -1,4 +1,4 @@
-package com.github.ldzm.nio;
+package com.github.ldzm.io.nio;
 
 import com.github.ldzm.commom.CharsetHelper;
 
@@ -78,7 +78,7 @@ public class MultiPortEcho {
             // 7. 将新连接注册到selector。将新连接的 SocketChannel 配置为非阻塞的
             //而且由于接受这个连接的目的是为了读取来自套接字的数据，所以我们还必须将 SocketChannel 注册到 Selector上
             SelectionKey newKey = sc.register(selector,SelectionKey.OP_READ);
-            System.out.println("Got connection from " + sc);
+            System.out.println("Got connection from " + sc.getRemoteAddress());
 
             //将key对应Channel设置为准备接受其他请求
             //key.interestOps(SelectionKey.OP_ACCEPT);
@@ -96,13 +96,13 @@ public class MultiPortEcho {
                     break;
                 }
                 echoBuffer.flip();
-                System.out.println("收到：" + CharsetHelper.decode(echoBuffer));
+                System.out.println("收到来自" + sc.getRemoteAddress() + "的数据：" + CharsetHelper.decode(echoBuffer));
                 echoBuffer.flip();
                 sc.write(echoBuffer);
                 bytesEchoed += r;
             }
             echoBuffer.clear();
-            System.out.println("Echoed " + bytesEchoed + " from " + sc);
+            System.out.println("收到来自" + sc.getRemoteAddress() + "的数据：" + bytesEchoed + " bytes");
 
             // 写完就把状态关注去掉，否则会一直触发写事件(改变自身关注事件)
             //key.interestOps(SelectionKey.OP_READ);
