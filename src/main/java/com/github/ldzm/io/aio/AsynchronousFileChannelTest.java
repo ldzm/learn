@@ -1,10 +1,11 @@
 package com.github.ldzm.io.aio;
 
+import com.github.ldzm.commom.CharsetHelper;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileLock;
-import java.nio.charset.Charset;
+import java.nio.charset.CharacterCodingException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -12,11 +13,12 @@ import java.util.concurrent.Future;
 
 public class AsynchronousFileChannelTest {
 
-    // 异步文件读写示例
-    public static void asyFile() {
-        ByteBuffer buffer = ByteBuffer.allocate(100);
-        String encoding = System.getProperty("file.encoding");
-        Path path = Paths.get("/tmp", "store.txt");
+    private static ByteBuffer buffer = ByteBuffer.allocate(100);
+
+    // 异步文件读示例
+    public static void asynchronousReadFile(String directory, String file) {
+
+        Path path = Paths.get(directory, file);
         try (AsynchronousFileChannel asynchronousFileChannel = AsynchronousFileChannel
                 .open(path, StandardOpenOption.READ)) {
             Future<Integer> result = asynchronousFileChannel.read(buffer, 0);
@@ -30,39 +32,48 @@ public class AsynchronousFileChannelTest {
             System.out.println("Bytes read: " + result.get());
 
             // 使用CompletionHandler回调接口异步读取文件
-            final Thread current = Thread.currentThread();
-            asynchronousFileChannel.read(buffer, 0,
-                    "Read operation status ...",
-                    new CompletionHandler<Integer, Object>() {
-                        @Override
-                        public void completed(Integer result, Object attachment) {
-                            System.out.println(attachment);
-                            System.out.print("Read bytes: " + result);
-                            current.interrupt();
-                        }
 
-                        @Override
-                        public void failed(Throwable exc, Object attachment) {
-                            System.out.println(attachment);
-                            System.out.println("Error:" + exc);
-                            current.interrupt();
-                        }
-                    });
+
+//            final Thread current = Thread.currentThread();
+//            asynchronousFileChannel.read(buffer, 0,
+//                    "Read operation status ...",
+//                    new CompletionHandler<Integer, Object>() {
+//                        @Override
+//                        public void completed(Integer result, Object attachment) {
+//                            System.out.println(attachment);
+//                            System.out.print("Read bytes: " + result + " H");
+//                            current.interrupt();
+//                        }
+//
+//                        @Override
+//                        public void failed(Throwable exc, Object attachment) {
+//                            System.out.println(attachment);
+//                            System.out.println("Error:" + exc);
+//                            current.interrupt();
+//                        }
+//                    });
 
         } catch (Exception ex) {
             System.err.println(ex);
         }
         buffer.flip();
-        System.out.print(Charset.forName(encoding).decode(buffer));
+        try {
+            System.out.print(CharsetHelper.decode(buffer));
+        } catch (CharacterCodingException e) {
+            e.printStackTrace();
+        }
         buffer.clear();
+    }
 
+    // 异步文件写示例
+    public static void asynchronousWriteFile(String directory, String file) {
         // 异步文件写示例
         ByteBuffer buffer1 = ByteBuffer
                 .wrap("The win keeps Nadal at the top of the heap in men's"
                         .getBytes());
-        Path path1 = Paths.get("/tmp", "store.txt");
+        Path path = Paths.get(directory, file);
         try (AsynchronousFileChannel asynchronousFileChannel = AsynchronousFileChannel
-                .open(path1, StandardOpenOption.WRITE)) {
+                .open(path, StandardOpenOption.WRITE)) {
             Future<Integer> result = asynchronousFileChannel
                     .write(buffer1, 100);
             while (!result.isDone()) {
@@ -95,4 +106,9 @@ public class AsynchronousFileChannelTest {
         }
     }
 
+    public static void main(String[] args) {
+
+        asynchronousReadFile("F:\\", "store.txt");
+        asynchronousWriteFile("F:\\", "store.txt");
+    }
 }
