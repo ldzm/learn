@@ -4,6 +4,7 @@ import com.github.ldzm.commom.CharsetHelper;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.channels.FileLock;
 import java.nio.charset.CharacterCodingException;
 import java.nio.file.Path;
@@ -31,31 +32,58 @@ public class AsynchronousFileChannelTest {
             System.out.println("Read done: " + result.isDone());
             System.out.println("Bytes read: " + result.get());
 
+        } catch (Exception ex) {
+            System.err.println(ex);
+        }
+        buffer.flip();
+        try {
+            System.out.print(CharsetHelper.decode(buffer));
+        } catch (CharacterCodingException e) {
+            e.printStackTrace();
+        }
+        buffer.clear();
+    }
+
+    public static void asynchronousReadFileByCompletionHandler(String directory, String file) {
+        // 使用CompletionHandler回调接口异步读取文件
+
+        System.out.println("main thread id:" + Thread.currentThread().getId());
+        Path path = Paths.get(directory, file);
+        try (AsynchronousFileChannel asynchronousFileChannel = AsynchronousFileChannel
+                .open(path, StandardOpenOption.READ)) {
+
             // 使用CompletionHandler回调接口异步读取文件
+            final Thread current = Thread.currentThread();
+            asynchronousFileChannel.read(buffer, 0,
+                    "Read operation status ...",
+                    new CompletionHandler<Integer, Object>() {
+                        @Override
+                        public void completed(Integer result, Object attachment) {
+                            System.out.println(attachment);
+                            System.out.println("Read bytes: " + result + " H");
+                            System.out.println("read thread id:" + Thread.currentThread().getId());
+                            //current.interrupt();
+                            System.out.println("H");
+                        }
 
-
-//            final Thread current = Thread.currentThread();
-//            asynchronousFileChannel.read(buffer, 0,
-//                    "Read operation status ...",
-//                    new CompletionHandler<Integer, Object>() {
-//                        @Override
-//                        public void completed(Integer result, Object attachment) {
-//                            System.out.println(attachment);
-//                            System.out.print("Read bytes: " + result + " H");
-//                            current.interrupt();
-//                        }
-//
-//                        @Override
-//                        public void failed(Throwable exc, Object attachment) {
-//                            System.out.println(attachment);
-//                            System.out.println("Error:" + exc);
-//                            current.interrupt();
-//                        }
-//                    });
+                        @Override
+                        public void failed(Throwable exc, Object attachment) {
+                            System.out.println(attachment);
+                            System.out.println("Error:" + exc);
+                            //current.interrupt();
+                        }
+                    });
 
         } catch (Exception ex) {
             System.err.println(ex);
         }
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         buffer.flip();
         try {
             System.out.print(CharsetHelper.decode(buffer));
@@ -108,7 +136,8 @@ public class AsynchronousFileChannelTest {
 
     public static void main(String[] args) {
 
-        asynchronousReadFile("F:\\", "store.txt");
+        //asynchronousReadFile("F:\\", "store.txt");
+        asynchronousReadFileByCompletionHandler("F:\\", "store.txt");
         asynchronousWriteFile("F:\\", "store.txt");
     }
 }

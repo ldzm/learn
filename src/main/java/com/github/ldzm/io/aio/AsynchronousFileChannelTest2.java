@@ -1,8 +1,9 @@
 package com.github.ldzm.io.aio;
 
+import com.github.ldzm.commom.CharsetHelper;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -24,14 +25,13 @@ public class AsynchronousFileChannelTest2 {
 
     // 使用AsynchronousFileChannel.open(path, withOptions(),
     // taskExecutor))这个API对异步文件IO的处理
-    public static void asyFileChannel2() {
+    public static void asynchronousFileChannel(String directory, String file) {
         final int THREADS = 5;
         ExecutorService taskExecutor = Executors.newFixedThreadPool(THREADS);
-        String encoding = System.getProperty("file.encoding");
+
         List<Future<ByteBuffer>> list = new ArrayList<>();
         int sheeps = 0;
-        Path path = Paths.get("/tmp",
-                "store.txt");
+        Path path = Paths.get(directory,file);
         try (AsynchronousFileChannel asynchronousFileChannel = AsynchronousFileChannel
                 .open(path, withOptions(), taskExecutor)) {
             for (int i = 0; i < 50; i++) {
@@ -63,14 +63,17 @@ public class AsynchronousFileChannelTest2 {
             for (Future<ByteBuffer> future : list) {
                 ByteBuffer buffer = future.get();
                 System.out.println("\n\n" + buffer);
-                System.out
-                        .println("______________________________________________________");
+                System.out.println("______________________________________________________");
                 buffer.flip();
-                System.out.print(Charset.forName(encoding).decode(buffer));
+                System.out.print(CharsetHelper.decode(buffer));
                 buffer.clear();
             }
         } catch (Exception ex) {
             System.err.println(ex);
         }
+    }
+
+    public static void main(String[] args) {
+        asynchronousFileChannel("F:\\", "store.txt");
     }
 }
