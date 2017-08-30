@@ -1,12 +1,17 @@
 package com.github.ldzm.io.aio;
 
+import com.github.ldzm.commom.CharsetHelper;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class AsynchronousServerSocketChannelTest {
 
@@ -25,7 +30,7 @@ public class AsynchronousServerSocketChannelTest {
 //      AsynchronousServerSocketChannel asynchronousServerSocketChannel =
 //              AsynchronousServerSocketChannel.open(threadGroup);
 
-        final int DEFAULT_PORT = 5555;
+        final int DEFAULT_PORT = 9002;
         final String IP = "127.0.0.1";
         ExecutorService taskExecutor = Executors.newCachedThreadPool(Executors
                 .defaultThreadFactory());
@@ -44,15 +49,30 @@ public class AsynchronousServerSocketChannelTest {
                 // display a waiting message while ... waiting clients
                 System.out.println("Waiting for connections ...");
                 while (true) {
-                    Future<AsynchronousSocketChannel> asynchronousSocketChannelFuture = asynchronousServerSocketChannel.accept();
+                    Future<AsynchronousSocketChannel> asynchronousSocketChannelFuture =
+                            asynchronousServerSocketChannel.accept();
                     //使用CompletionHandler来处理IO事件
-//                  asynchronousServerSocketChannel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>()
+                    //asynchronousServerSocketChannel.accept(null, new CompletionHandler<AsynchronousSocketChannel, Void>()
                     //client使用CompletionHandler来处理IO事件
                     //asynchronousSocketChannel.connect(new InetSocketAddress(IP, DEFAULT_PORT), null,new CompletionHandler<Void, Void>()
                     try {
-                        final AsynchronousSocketChannel asynchronousSocketChannel = asynchronousSocketChannelFuture
-                                .get();
-                        Callable<String> worker = new Callable<String>() {
+                        while (true) {
+                            final AsynchronousSocketChannel asynchronousSocketChannel = asynchronousSocketChannelFuture
+                                    .get();
+
+                            if (asynchronousSocketChannelFuture.isDone()) {
+
+                                final ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
+                                // transmitting data
+                                asynchronousSocketChannel.read(buffer).get();
+                                buffer.flip();
+                                System.out.println("From client: " + CharsetHelper.decode(buffer));
+                                //break;
+                            }
+                        }
+
+
+                        /*Callable<String> worker = new Callable<String>() {
                             @Override
                             public String call() throws Exception {
                                 String host = asynchronousSocketChannel.getRemoteAddress().toString();
@@ -64,7 +84,12 @@ public class AsynchronousServerSocketChannelTest {
                                 while (asynchronousSocketChannel.read(buffer)
                                         .get() != -1) {
                                     buffer.flip();
+                                    System.out.println("From client: " + CharsetHelper.decode(buffer));
                                 }
+
+                                buffer.clear();
+
+                                *//*
                                 asynchronousSocketChannel.write(buffer).get();
                                 if (buffer.hasRemaining()) {
                                     buffer.compact();
@@ -73,11 +98,11 @@ public class AsynchronousServerSocketChannelTest {
                                 }
                                 asynchronousSocketChannel.close();
                                 System.out.println(host
-                                        + " was successfully served!");
+                                        + " was successfully served!");*//*
                                 return host;
                             }
                         };
-                        taskExecutor.submit(worker);
+                        taskExecutor.submit(worker);*/
                     } catch (InterruptedException | ExecutionException ex) {
                         System.err.println(ex);
                         System.err.println("\n Server is shutting down ...");
@@ -98,5 +123,9 @@ public class AsynchronousServerSocketChannelTest {
             System.err.println(ex);
         }
 
+    }
+
+    public static void main(String[] args) {
+        asyServerSocketChannel();
     }
 }
