@@ -16,22 +16,36 @@ public class Partition {
         ListNode small = null;
         ListNode preCurrent = null;
         ListNode current = head;
-        while (current != null) {
+        while(current != null) {
+            if(current.val >= x) {
+                break;
+            }
+            small = current;
+            preCurrent = current;
+            current = current.next;
+        }
 
-            if(current.val <= x) {
+        while(current != null) {
+            if(current.val < x) {
+                current = current.next;
+
                 if(small == null) {
-                    small = head;
-                } else {
+                    small = preCurrent.next;
+                    small.next = head;
+                    head = small; // head赋值为small的地址，但是参数中的head的值不会变（引用的传值），所以必须用返回值来传递结果
+
+                } else  {
+                    ListNode temp = small.next;
+                    small.next = preCurrent.next;
+                    small.next.next = temp;
                     small = small.next;
                 }
-                if(small != current) {
-                    int temp = small.val;
-                    small.val = current.val;
-                    current.val = temp;
-                }
-            }
 
-            current = current.next;
+                preCurrent.next = current;
+            } else {
+                preCurrent = current;
+                current = current.next;
+            }
         }
 
         return head;
@@ -57,7 +71,7 @@ public class Partition {
         }
         System.out.println();
 
-        new Partition().partition(head, 3);
+        head = new Partition().partition(head, 3);
 
         current = head;
         while(current != null) {
@@ -83,7 +97,7 @@ public class Partition {
         }
         System.out.println();
 
-        new Partition().partition(head2, 3);
+        head2 = new Partition().partition(head2, 3);
 
         current = head2;
         while(current != null) {
