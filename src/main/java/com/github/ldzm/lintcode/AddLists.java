@@ -35,22 +35,34 @@ public class AddLists {
             l2 = l2.next;
         }
 
-        if (l1 == null && l2 == null && (temp / 10 == 1)) {
-            current.next = new ListNode(1);
-            current = current.next;
-        }
-
+        // 计算l2剩余的数
         if (l1 == null && l2 != null) {
 
-            l2.val = l2.val + temp / 10;
-            current.next = l2;
-            current = current.next;
+            temp = l2.val + temp / 10;
+            l2.val = temp % 10;
+
+            while(l2 != null) {
+                current.next = l2;
+                current = current.next;
+                l2 = l2.next;
+            }
         }
 
+        // 计算l1剩余的数
         if (l2 == null && l1 != null) {
 
-            l1.val = l1.val + temp / 10;
-            current.next = l1;
+            temp = l1.val + temp / 10;
+            l1.val = temp % 10;
+            while(l1 != null) {
+                current.next = l1;
+                current = current.next;
+                l1 = l1.next;
+            }
+        }
+
+        // 最后一个数如果有进位必须new一个节点
+        if (l1 == null && l2 == null && (temp / 10 == 1)) {
+            current.next = new ListNode(1);
             current = current.next;
         }
 
@@ -60,16 +72,17 @@ public class AddLists {
     public static void main(String[] args) {
 
         ListNode head;
-        ListNode current = head = new ListNode(3);
-        current.next = new ListNode(1);
-        current = current.next;
-        current.next = new ListNode(5);
+        ListNode current = head = new ListNode(9);
+        current.next = new ListNode(9);
+
+        //current = current.next;
+        //current.next = new ListNode(5);
 
         ListNode head2;
-        current = head2 = new ListNode(5);
-        current.next = new ListNode(9);
-        current = current.next;
-        current.next = new ListNode(4);
+        current = head2 = new ListNode(9);
+        //current.next = new ListNode(9);
+        //current = current.next;
+        //current.next = new ListNode(4);
 
         current = new AddLists().addLists(head, head2);
 
