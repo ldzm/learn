@@ -22,8 +22,12 @@ public class FinalTest {
         if(flag == 1) {
             //finalTest = new FinalTest(1);
         }
-        System.out.println(finalTest.getNum());
+        //System.out.println(finalTest.getNum());
+        String s = "";
+        s.toCharArray();
+
+        int[] num = new int[0];
+        System.out.println(num == null);
+        System.out.println(num.length);
     }
-
-
 }
