@@ -2,7 +2,7 @@ package com.github.ldzm.test;
 
 import java.util.Scanner;
 
-public class Main12 {
+public class SleepWaitTest {
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
