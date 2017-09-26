@@ -1,6 +1,4 @@
-package com.github.ldzm.algorithm;
-
-import java.util.Arrays;
+package com.github.ldzm.lintcode;
 
 public class SearchRange {
 
@@ -16,7 +14,7 @@ public class SearchRange {
         // 找到左边界
         int left = 0;
         int right = A.length - 1;
-        int mid = -1;
+        int mid;
 
         while(left < right) {
             mid = (left + right) / 2;
@@ -34,10 +32,16 @@ public class SearchRange {
         }
         result[0] = left;
 
-        // 找到有边界
+        // 找到右边界
         left = 0;
         right = A.length - 1;
         while (left < right) {
+            // +1解决以下问题：
+            // 比如数组为：2 2 2
+            // target为2
+            // left = (0 + 2) / 2 == 1
+            // left = (1 + 2) / 2 == 1
+            // left永远无法==right
             mid = (left + right + 1) / 2;
             if(A[mid] > target) {
                 right = mid - 1;
@@ -48,12 +52,5 @@ public class SearchRange {
         result[1] = right;
 
         return result;
-    }
-
-    public static void main(String[] args) {
-        int[] data = {5, 7, 7, 8, 8, 10};
-        int target = 8;
-
-        System.out.println(Arrays.toString(SearchRange.searchRange(data, target)));
     }
 }
