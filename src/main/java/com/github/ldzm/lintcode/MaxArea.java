@@ -1,7 +1,5 @@
 package com.github.ldzm.lintcode;
 
-import java.util.Stack;
-
 public class MaxArea {
     /**
      * @param heights: a vector of integers
@@ -13,20 +11,25 @@ public class MaxArea {
             return 0;
         }
 
-        Stack<Integer> stack = new Stack<>();
-        int max = 0;
-        for(int i = 0; i < heights.length; i++) {
-            if(stack.isEmpty() || heights[stack.peek()] < heights[i]){
-                stack.push(i);
+        int maxArea = 0;
+
+        int leftIndex = 0;
+        int rightIndex = heights.length - 1;
+        while(leftIndex < rightIndex) {
+            int currentArea = 0;
+            if(heights[leftIndex] < heights[rightIndex]) {
+                currentArea = (rightIndex - leftIndex) * heights[leftIndex];
+                leftIndex++;
             } else {
-                int leftIndex = stack.pop();
-                int right = i;
-                if((right - leftIndex) * heights[leftIndex] > max) {
-                    max = (right - leftIndex) * heights[leftIndex];
-                }
+                currentArea = (rightIndex - leftIndex) * heights[rightIndex];
+                rightIndex--;
+            }
+
+            if(currentArea > maxArea) {
+                maxArea = currentArea;
             }
         }
 
-        return max;
+        return maxArea;
     }
 }
