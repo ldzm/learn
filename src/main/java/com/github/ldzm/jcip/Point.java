@@ -1,5 +1,6 @@
 package com.github.ldzm.jcip;
 
+import net.jcip.annotations.Immutable;
 /**
  * Point
  * <p/>
@@ -7,7 +8,7 @@ package com.github.ldzm.jcip;
  *
  * @author Brian Goetz and Tim Peierls
  */
-//@Immutable
+@Immutable
 public class Point {
     public final int x, y;
 
