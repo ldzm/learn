@@ -1,7 +1,6 @@
 package com.github.ldzm.lintcode;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class ThreeSum {
     /**
@@ -12,12 +11,29 @@ public class ThreeSum {
         // write your code here
 
         Arrays.sort(numbers);
-
-        for(int num3Index = 0; num3Index < numbers.length - 2; num3Index++) {
-
-            int target = numbers[num3Index];
-
+        HashMap<Integer, Integer> numbs = new HashMap<>();
+        for(int i = 0; i < numbers.length; i++) {
+            numbs.put(numbers[i], i);
         }
-        return null;
+
+        List<List<Integer>> result = new ArrayList<>();
+        Set<List<Integer>> sets = new HashSet<>();
+        for(int i = 0; i < numbers.length - 1; i++) {
+            for(int j = i + 1; j < numbers.length; j++) {
+                int a = -numbers[j] - numbers[i];
+                if(numbs.containsKey(a) && numbs.get(a) > j) {
+                    ArrayList<Integer> temp = new ArrayList<>(3);
+                    temp.add(numbers[i]);
+                    temp.add(numbers[j]);
+                    temp.add(a);
+                    sets.add(temp);
+                }
+            }
+        }
+
+        for(List<Integer> list : sets) {
+            result.add(list);
+        }
+        return result;
     }
 }
