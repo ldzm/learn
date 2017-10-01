@@ -1,8 +1,7 @@
 package com.github.ldzm.test;
 
-public class A {
-
+public class ABCDEFGHIJKLMN {
     public static void main(String[] args) {
-
+        
     }
 }
